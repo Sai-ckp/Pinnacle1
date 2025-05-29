@@ -1,0 +1,139 @@
+{% extends 'master/layout.html' %}
+
+{% block content %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+    }
+
+    th {
+        border: 1px solid #ddd;
+        padding: 1px;
+        text-align: center;
+        font-weight: 200;
+        font-size: 12px;
+    }
+
+    td {
+        border: 1px solid #ddd;
+        padding: 1px;
+        text-align: center;
+        font-weight: 200;
+        font-size: 9px;
+    }
+
+    th {
+        background-color: #007bff;
+        color: white;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .tab-buttons {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+        .tab-buttons a {
+            text-decoration: none;
+            padding: 10px 30px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            margin: 0 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .tab-buttons .active {
+            background-color: #0056b3;
+        }
+
+    .dropdown-btn {
+        background: none;
+        border: none;
+        color: white;
+        text-align: left;
+        padding: 10px 9px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        display: block;
+        width: 100%;
+    }
+    .sidebar a {
+        color: white;
+        text-decoration: none;
+        padding: 13px 8px;
+        display: block;
+        font-weight: 500;
+    }
+    .empty {
+        text-align: center;
+        color: gray;
+        margin-top: 20px;
+    }
+
+    .content {
+        padding: 40px 20px 18px;
+    }
+</style>
+
+<h2>{{ selected_type }} Students List</h2>
+
+<div class="tab-buttons" style="margin-bottom: 15px;">
+    <a href="{% url 'student_list' %}?course_type=PU"
+       style="margin-right: 10px; font-size: 14px; padding: 6px; {% if selected_type == 'PU' %}font-weight:bold;{% endif %}">
+        PU Students
+    </a>
+    <a href="{% url 'student_list' %}?course_type=Degree"
+       style="margin-right: 10px; font-size: 14px; padding: 6px; {% if selected_type == 'Degree' %}font-weight:bold;{% endif %}">
+        Degree Students
+    </a>
+</div>
+
+{% if students %}
+<table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th>Student Name</th>
+            <th>Admission No</th>
+            <th>DOB</th>
+            <th>Gender</th>
+            <th>Phone</th>
+            <th>Parent Phone</th>
+            {% if selected_type == 'Degree' %}
+            <th>Category</th>
+            {% endif %}
+            <th>Quota</th>
+            <th>Admission Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.student_name }}</td>
+            <td>{{ student.admission_no }}</td>
+            <td>{{ student.dob }}</td>
+            <td>{{ student.gender }}</td>
+            <td>{{ student.phone }}</td>
+            <td>{{ student.parent_phone }}</td>
+            {% if selected_type == 'Degree' %}
+            <td>{{ student.category }}</td>
+            {% endif %}
+            <td>{{ student.quota_type }}</td>
+            <td>{{ student.admission_date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty">No students found for {{ selected_type }}.</p>
+{% endif %}
+
+{% endblock %}
+

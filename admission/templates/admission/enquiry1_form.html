@@ -1,0 +1,502 @@
+{% extends 'master/layout.html' %}
+
+{% block title %}Enquiry Form{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="form-card mx-auto" style="max-width: 800px;">
+        <!-- ✅ LOGO AND HEADING -->
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/fbZjQX3j/Untitled-Project.jpg" alt="College Logo">
+            <h2>Enquiry Form</h2>
+        </div>
+
+        {# Show success message if present #}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}"
+             style="color: green; font-weight: bold; margin-bottom: 10px;">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Enquiry No:</label>
+                    <input type="text" value="{{ next_enquiry_no }}" readonly style="background:#eee;">
+                </div>
+                <div class="form-group">
+                    {{ form.student_name.label_tag }} {{ form.student_name }}
+                </div>
+                <div class="form-group">
+                    {{ form.gender.label_tag }} {{ form.gender }}
+                </div>
+                <div class="form-group">
+                    {{ form.parent_relation.label_tag }} {{ form.parent_relation }}
+                </div>
+                <div class="form-group">
+                    {{ form.parent_name.label_tag }} {{ form.parent_name }}
+                </div>
+                <div class="form-group">
+                    {{ form.parent_phone.label_tag }} {{ form.parent_phone }}
+                </div>
+                <div class="form-group">
+                    {{ form.course_type.label_tag }} {{ form.course_type }}
+                </div>
+                <div class="form-group">
+                    {{ form.course.label_tag }} {{ form.course }}
+                </div>
+                <!-- Add percentage-group wrapper for better print alignment -->
+                <div class="form-group" id="percentage_10th_field">
+                    {{ form.percentage_10th.label_tag }}
+                    <div class="percentage-group">
+                        {{ form.percentage_10th }}<span>%</span>
+                    </div>
+                </div>
+                <div class="form-group" id="percentage_12th_field">
+                    {{ form.percentage_12th.label_tag }}
+                    <div class="percentage-group">
+                        {{ form.percentage_12th }}<span>%</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form.email.label_tag }} {{ form.email }}
+                </div>
+                <div class="form-group">
+                    {{ form.address.label_tag }} {{ form.address }}
+                </div>
+            </div>
+            <div class="mt-4 d-flex justify-content-between">
+                <button type="button" class="btn btn-primary btn-sm no-print" onclick="printForm()">🖨️ Print</button>
+                <button type="submit" class="btn btn-primary btn-lg no-print">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f0f2f5;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-left: 91px;
+    }
+
+    .form-card {
+        background: #fff;
+        padding: 40px 50px;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-title {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px 32px;
+        margin-top: 10px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .form-group input {
+            padding: 2px 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 9px;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            padding: 6px 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+    .percentage-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+
+        .percentage-group input {
+            width: 48px;
+            min-width: 0;
+            max-width: 65px;
+            margin-right: 2px;
+            text-align: right;
+        }
+
+        .percentage-group span {
+            font-size: 12px;
+            margin-left: 0;
+        }
+
+    .btn {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: #0274ee;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #025fc1;
+        }
+
+    .alert {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #f5c6cb;
+        font-size: 14px;
+        margin-top: 24px;
+    }
+
+    textarea#id_address {
+        height: 60px !important;
+    }
+
+    .sidebar a {
+        color: white;
+        text-decoration: none;
+        padding: 12px 8px;
+        display: block;
+        font-weight: 500;
+    }
+
+    @media print {
+        .btn,
+        .alert,
+        .no-print,
+        .sidebar,
+        .topbar,
+        .navbar,
+        .footer {
+            display: none !important;
+        }
+
+        body {
+            background: white;
+            margin: 0;
+        }
+
+        .form-card {
+            box-shadow: none;
+            border: none;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-title {
+            font-size: 16pt;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .percentage-group {
+            display: inline-block !important;
+        }
+
+            .percentage-group input {
+                border: none !important;
+                background: none !important;
+                width: 28px !important;
+                min-width: 0 !important;
+                display: inline !important;
+                padding: 0 !important;
+                font-size: inherit !important;
+                text-align: right !important;
+            }
+
+            .percentage-group span {
+                display: inline !important;
+                font-size: inherit !important;
+                padding-left: 0 !important;
+            }
+    }
+
+    @media (max-width: 600px) {
+        .form-card {
+            padding: 30px 20px;
+        }
+
+        .form-title {
+            font-size: 20px;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .form-grid {
+            gap: 12px;
+        }
+    }
+
+    .logo-container {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+        .logo-container img {
+            max-width: 540px;
+            margin-bottom: -18px;
+            margin-left: -36px;
+        }
+
+        .logo-container h2 {
+            margin-top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // AJAX for dependent course dropdown
+    $(function () {
+        $('#id_course_type').change(function () {
+            var url = "{% url 'ajax_load_courses' %}";
+            var courseTypeId = $(this).val();
+            $.ajax({
+                url: url,
+                data: {
+                    'course_type': courseTypeId
+                },
+                success: function (data) {
+                    var courseSelect = $('#id_course');
+                    courseSelect.html('<option value="">---------</option>');
+                    $.each(data, function (index, course) {
+                        courseSelect.append('<option value="' + course.id + '">' + course.name + '</option>');
+                    });
+                }
+            });
+            updatePercentageFields();
+        });
+        // Also run on page load
+        updatePercentageFields();
+    });
+
+    // Show/hide percentage fields based on course_type selection
+    function updatePercentageFields() {
+        var courseTypeSelect = document.getElementById('id_course_type');
+        var perc10Field = document.getElementById('percentage_10th_field');
+        var perc12Field = document.getElementById('percentage_12th_field');
+        if (!courseTypeSelect) return;
+        // Get selected option text (case-insensitive)
+        var selectedText = courseTypeSelect.options[courseTypeSelect.selectedIndex]?.text.toLowerCase() || "";
+        if (selectedText.includes('puc')) {
+            perc10Field.style.display = 'block';
+            perc12Field.style.display = 'none';
+        } else if (selectedText.includes('degree')) {
+            perc10Field.style.display = 'block';
+            perc12Field.style.display = 'block';
+        } else {
+            perc10Field.style.display = 'block';
+            perc12Field.style.display = 'block';
+        }
+    }
+
+    function printForm() {
+        const originalForm = document.querySelector('form');
+        if (!originalForm) {
+            alert("Form not found!");
+            return;
+        }
+
+        // Clone form deeply
+        const form = originalForm.cloneNode(true);
+
+        // For all inputs/selects/textarea, set their 'value' or innerText in cloned form
+        // This will make sure the current filled values appear in print
+        form.querySelectorAll('input, select, textarea').forEach(el => {
+            if (el.tagName.toLowerCase() === 'input') {
+                if (el.type === 'checkbox' || el.type === 'radio') {
+                    if (el.checked) {
+                        el.setAttribute('checked', 'checked');
+                    } else {
+                        el.removeAttribute('checked');
+                    }
+                } else if (el.type === 'file') {
+                    // remove file input from print (no files in print)
+                    el.remove();
+                } else {
+                    el.setAttribute('value', el.value);
+                }
+            } else if (el.tagName.toLowerCase() === 'select') {
+                // For select, mark selected option as selected attribute
+                el.querySelectorAll('option').forEach(option => {
+                    if (option.selected) {
+                        option.setAttribute('selected', 'selected');
+                    } else {
+                        option.removeAttribute('selected');
+                    }
+                });
+            } else if (el.tagName.toLowerCase() === 'textarea') {
+                el.innerText = el.value;
+            }
+        });
+
+        // EXPLICITLY set value on selects in cloned form to match the original form
+        form.querySelectorAll('select').forEach(select => {
+            if (select.name) {
+                const orig = originalForm.querySelector(`[name="${select.name}"]`);
+                if (orig) {
+                    select.value = orig.value;
+                    // Also, re-mark the selected option
+                    select.querySelectorAll('option').forEach(option => {
+                        if (option.value === select.value) {
+                            option.setAttribute('selected', 'selected');
+                        } else {
+                            option.removeAttribute('selected');
+                        }
+                    });
+                }
+            }
+        });
+
+        // For print: Replace percentage input fields with value + % for cleaner print alignment
+        form.querySelectorAll('.percentage-group').forEach(group => {
+            const input = group.querySelector('input');
+            if (input) {
+                const value = input.value;
+                input.remove();
+                group.innerHTML = value + '<span>%</span>';
+            }
+        });
+
+        // Remove print and submit buttons
+        form.querySelectorAll('button, input[type="submit"], input[type="button"]').forEach(btn => btn.remove());
+
+        // Remove dropdown arrows and date/time pickers styling for print clarity
+        form.querySelectorAll('select, input[type="date"], input[type="time"], input[type="datetime-local"]').forEach(el => {
+            el.style.appearance = 'none';
+            el.style.webkitAppearance = 'none';
+            el.style.mozAppearance = 'none';
+            el.style.background = 'none';
+        });
+
+        // Get the uploaded photo preview src (if any)
+        const photoPreview = document.getElementById('photoPreview');
+        if (photoPreview && photoPreview.src && !photoPreview.src.includes('transparent')) {
+            const photoDiv = document.createElement('div');
+            photoDiv.style.margin = '10px 0';
+            photoDiv.innerHTML = `<label style="font-weight:bold;">Uploaded Photo:</label><br><img src="${photoPreview.src}" style="max-width:150px; max-height:150px;" alt="Uploaded Photo">`;
+            form.appendChild(photoDiv);
+        }
+
+        const content = form.outerHTML;
+
+        const newWindow = window.open('', '', 'width=900,height=650');
+        newWindow.document.write(`
+            <html>
+                <head>
+                    <title>Enquiry Form</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 20px;
+                        }
+                        .form-group {
+                            margin-bottom: 15px;
+                        }
+                        label {
+                            font-weight: bold;
+                        }
+                        input, select, textarea {
+                            border: none;
+                            border-bottom: 1px solid #000;
+                            padding: 4px;
+                            width: 100%;
+                            background: none;
+                        }
+                        .percentage-group {
+                            display: inline-block;
+                        }
+                        .percentage-group input {
+                            border: none !important;
+                            background: none !important;
+                            width: 28px !important;
+                            min-width: 0 !important;
+                            display: inline !important;
+                            padding: 0 !important;
+                            font-size: inherit !important;
+                            text-align: right !important;
+                        }
+                        .percentage-group span {
+                            display: inline !important;
+                            font-size: inherit !important;
+                            padding-left: 0 !important;
+                        }
+                        .no-print {
+                            display: none;
+                        }
+                        .logo {
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+                        .logo img {
+                            max-height: 100px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="logo" style="text-align:center; margin-bottom: 20px;">
+                        <img src="https://i.postimg.cc/fbZjQX3j/Untitled-Project.jpg" alt="College Logo" style="max-height: 104px; margin-bottom: -44px; margin-top: -30px; margin-left: -12px;">
+                    </div>
+                    <h2 style="text-align:center;">Enquiry Form</h2>
+                    ${content}
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.onafterprint = function() {
+                                window.close();
+                            };
+                        };
+                    <\/script>
+                </body>
+            </html>
+        `);
+        newWindow.document.close();
+    }
+</script>
+{% endblock %}

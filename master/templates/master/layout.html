@@ -1,0 +1,282 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Student Alerts{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 200px;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff00cc, #3333ff);
+            color: white;
+            padding-top: 0px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* ✅ Enables vertical scrollbar */
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: rgba(255, 255, 255, 0.5) transparent; /* Firefox */
+        }
+
+            .sidebar::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .sidebar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .sidebar::-webkit-scrollbar-thumb {
+                background-color: rgba(255, 255, 255, 0.4);
+                border-radius: 4px;
+            }
+
+            .sidebar a {
+                color: white;
+                text-decoration: none;
+                padding: 10px 8px;
+                display: block;
+                font-weight: 500;
+            }
+
+        /*.sidebar a:hover {
+                    background-color: #0069d9;
+                }*/
+
+        .main-area {
+            margin-left: 200px;
+            width: calc(100% - 200px);
+        }
+
+        .topbar {
+            background: linear-gradient(135deg, #ff00cc, #3333ff);
+            padding: 12px 12px;
+            color: white;
+            width: calc(100% - 200px); /* Account for sidebar */
+            position: fixed; /* Make topbar fixed */
+            top: 0;
+            left: 200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+
+
+
+            .topbar a {
+                color: white;
+                text-decoration: none;
+                font-weight: 500;
+                margin: 0 -24px;
+                white-space: nowrap;
+            }
+
+                .topbar a:hover {
+                    text-decoration: underline;
+                }
+
+        .content {
+            padding: 0px 26px 18px; /* top padding added to avoid content under topbar */
+        }
+
+        .sidebar-title {
+            padding: 10px 12px;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .dropdown-btn {
+            background: none;
+            border: none;
+            color: white;
+            text-align: left;
+            padding: 10px 8px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            display: block;
+            width: 100%;
+        }
+
+        .dropdown-container {
+            display: none;
+            /*background-color: rgba(255, 255, 255, 0.1);*/
+            padding-left: 0px;
+        }
+
+            .dropdown-container a {
+                padding: 8px 8px;
+                display: block;
+                color: white;
+                font-weight: 500;
+                text-decoration: none;
+            }
+
+                /*.dropdown-container a:hover {
+                    text-decoration: underline;
+                }*/
+
+        .show {
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div style="padding: 10px 12px; font-size: 18px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.3);">
+            <i class="fas fa-home"></i> Home
+        </div>
+        {% if 'dashboard_view' in allowed_forms or can_access_all %}
+
+        <a href="{% url 'dashboard_view' %}"><i class="fas fa-chart-pie"></i> Dashboard</a>
+        {% endif %}
+        {% if 'dashboard_view' in allowed_forms or can_access_all %}
+
+        <a href="{% url 'student_data_view' %}"><i class="fas fa-user-graduate"></i> Student</a>
+        {% endif %}
+        {% if 'compose_message' in allowed_forms or can_access_all %}
+        <a href="{% url 'compose_message' %}"><i class="fas fa-paper-plane"></i> Message</a>
+        {% endif %}
+
+        {% if 'message_history_view' in allowed_forms or can_access_all %}
+        <a href="{% url 'message_history_view' %}"><i class="fas fa-archive"></i> Message History</a>
+        {% endif %}
+
+        {% if 'shortlist_display' in allowed_forms or can_access_all %}
+        <a href="{% url 'shortlist_display' %}"><i class="fas fa-money-check-alt"></i> Fee Form</a>
+        {% endif %}
+
+        {% if 'enquiry_form_view' in allowed_forms or can_access_all %}
+        <a href="{% url 'enquiry1_form' %}"><i class="fas fa-question-circle"></i> Enquiry </a>
+        {% endif %}
+
+
+        <!-- Admission Dropdown -->
+        {% if 'admission_form' in allowed_forms or 'degree_admission_form' in allowed_forms or can_access_all %}
+        <button class="dropdown-btn"><i class="fas fa-university"></i> Admission</button>
+        <div class="dropdown-container">
+            {% if 'admission_form' in allowed_forms or can_access_all %}
+            <a href="{% url 'admission_form' %}"><i class="fas fa-user-plus"></i> Admission Form</a>
+            {% endif %}
+
+            {% if 'degree_admission_form' in allowed_forms or can_access_all %}
+            <a href="{% url 'degree_admission_form' %}"><i class="fas fa-award"></i> Degree Form</a>
+            {% endif %}
+
+        </div>
+        {% endif %}
+
+        {% if 'student_list' in allowed_forms or 'payment_history' in allowed_forms or can_access_all %}
+        <button class="dropdown-btn"><i class="fas fa-university"></i> FEE</button>
+        <div>
+            {% if 'student_list' in allowed_forms or can_access_all %}
+
+            <a href="{% url 'student_list' %}"><i class="fas fa-envelope"></i> Fee Payment</a>
+            {% endif %}
+
+            {% if 'payment_history' in allowed_forms or can_access_all %}
+
+            <a href="{% url 'payment_history' %}">View Payment History</a>
+            {% endif %}
+
+        </div>
+        {% endif %}
+
+
+        {% if 'send_bulk_emails' in allowed_forms or can_access_all %}
+
+        <a href="{% url 'send_bulk_emails' %}"><i class="fas fa-certificate"></i> email form </a>
+        {% endif %}
+
+        {% if 'student_login' in allowed_forms or can_access_all %}
+
+        <a href="{% url 'student_login' %}"><i class="fas fa-certificate"></i> create login form </a>
+        {% endif %}
+
+
+        {% if 'reset_password' in allowed_forms or can_access_all %}
+
+        <a href="{% url 'reset_password' %}"><i class="fas fa-certificate"></i> reset_password form </a>
+        {% endif %}
+
+
+        {% if 'shortlisted_students_view' in allowed_forms or can_access_all %}
+        <a href="{% url 'shortlisted_students_view' %}"><i class="fas fa-check-circle"></i> Shortlisted Students</a>
+        {% endif %}
+
+        {% if 'period_list' in allowed_forms or can_access_all %}
+        <a href="{% url 'period_list' %}"><i class="fas fa-calendar-alt"></i> Period List</a>
+        {% endif %}
+
+        {% if 'attendance_list' in allowed_forms or can_access_all %}
+        <a href="{% url 'attendance_list' %}"><i class="fas fa-user-check"></i> Attendance List</a>
+        {% endif %}
+
+        {% if 'subject_list' in allowed_forms or can_access_all %}
+        <a href="{% url 'subject_list' %}"><i class="fas fa-book-open"></i> Subject List</a>
+        {% endif %}
+
+
+        {% if 'course_list' in allowed_forms or can_access_all %}
+        <a href="{% url 'course_list' %}"><i class="fas fa-chalkboard-teacher"></i> Course List</a>
+        {% endif %}
+
+        {% if 'student_list' in allowed_forms or can_access_all %}
+        <a href="{% url 'student_list' %}"><i class="fas fa-users"></i> Student Database</a>
+        {% endif %}
+
+        {% if 'semester_list' in allowed_forms or can_access_all %}
+        <a href="{% url 'semester_list' %}"><i class="fas fa-layer-group"></i> Semester List</a>
+        {% endif %}
+
+
+    </div>
+    </div>
+
+
+    <div class="main-area">
+        <div class="topbar">
+            <div>Student Alerts</div>
+            <div style="margin-right: 20px;">
+                <a href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+
+
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+</body>
+</html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var dropdown = document.querySelector(".dropdown-btn");
+        var dropdownContainer = document.querySelector(".dropdown-container");
+
+        dropdown.addEventListener("click", function () {
+            dropdownContainer.classList.toggle("show");
+        });
+    });
+</script>

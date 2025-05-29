@@ -1,0 +1,206 @@
+{% extends 'master/layout.html' %}
+
+{% block content %}
+<div class="form-card">
+    <h3 class="form-title">Fees Form</h3>
+
+    <!-- Stream Selection Form -->
+    <form method="get" action="{% url 'shortlist_display' %}">
+        <label for="type"><strong>Select Type:</strong></label>
+        <select name="type" id="type" onchange="this.form.submit()">
+            <option value="PU" {% if selection == 'PU' %}selected{% endif %}>PU</option>
+            <option value="Degree" {% if selection == 'Degree' %}selected{% endif %}>Degree</option>
+        </select>
+    </form>
+
+    <!-- Styled Table -->
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Sl No</th>
+                <th>Student Name</th>
+                <th>Course</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in shortlisted %}
+            <tr>
+                <td data-label="Sl No">{{ forloop.counter }}</td>
+                <td data-label="Student Name">{{ item.student_name }}</td>
+                <td data-label="Course">{{ item.course }}</td>
+                <td data-label="Action">
+                    {% if selection == 'PU' %}
+                    <a href="{% url 'pu_fee_detail_form' item.id %}">View/Add Fee</a>
+                    {% elif selection == 'Degree' %}
+                    <a href="{% url 'degree_fee_detail_form' item.id %}">View/Add Fee</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align:center;">No shortlisted students.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- CSS Styling -->
+<style>
+    .form-card {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 12px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+    .sidebar {
+        width: 200px;
+        height: 100vh;
+        background: linear-gradient(135deg, #ff00cc, #3333ff);
+        color: white;
+        padding-top: 0px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 8px;
+            display: block;
+            font-weight: 500;
+        }
+    .form-title {
+        font-size: 20px;
+        font-weight: 700;
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    form select {
+        font-size: 9px;
+        padding: 3px 4px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        cursor: pointer;
+        margin-top: 0px;
+    }
+
+    .styled-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        overflow: hidden;
+        font-size: 12px;
+        background-color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        margin-top: 20px;
+    }
+    .dropdown-btn {
+        background: none;
+        border: none;
+        color: white;
+        text-align: left;
+        padding: 10px 8px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: inherit;
+        display: block;
+        width: 100%;
+        font-size: 17px;
+    }
+    .styled-table thead {
+        background-color: #0274ee;
+        color: white;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 11px;
+    }
+
+        .styled-table thead th {
+            padding: 1px 4px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+    .styled-table tbody tr {
+        border-bottom: 1px solid #e0e0e0;
+        transition: background-color 0.2s ease;
+    }
+
+    .styled-table tbody tr:hover {
+        background-color: #f5faff;
+    }
+
+        .styled-table td {
+            padding: 2px 6px;
+            color: #333;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 9px;
+        }
+
+    .styled-table td a {
+        color: #0274ee;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .styled-table td a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .styled-table thead {
+            display: none;
+        }
+
+        .styled-table,
+        .styled-table tbody,
+        .styled-table tr,
+        .styled-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .styled-table tr {
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .styled-table td {
+            text-align: right;
+            padding-left: 50%;
+            position: relative;
+        }
+
+        .styled-table td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 10px;
+            top: 8px;
+            font-weight: bold;
+            text-align: left;
+            font-size: 11px;
+            color: #555;
+        }
+    }
+
+    .content {
+        padding: 2px 221px;
+    }
+</style>
+{% endblock %}

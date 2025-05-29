@@ -1,0 +1,141 @@
+{% extends 'master/layout.html' %}
+
+{% block content %}
+<style>
+    .form-card {
+        max-width: 600px;
+        margin: auto;
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .form-title {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0px;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 1px 6px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        text-align: left;
+        font-size: 9px;
+    }
+
+    .form-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn {
+        padding: 3px 6px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 9px;
+    }
+
+    .btn-submit {
+        background-color: #3498db;
+        color: #fff;
+    }
+
+    .btn-cancel {
+        background-color: #e74c3c;
+        color: #fff;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+</style>
+
+<div class="form-card">
+    <h2 class="form-title">Add employee</h2>
+    <div class="photo-section">
+        <label class="photo-label">Photo</label>
+        <div class="photo-upload" id="uploadBox">
+            <span>Upload</span>
+            {{ form.photo }}
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}
+            <div style="color: red;">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-submit">Save</button>
+            <a href="{% url 'employee_list_view' %}" class="btn btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fileInput = document.getElementById('id_photo');
+        const uploadBox = document.getElementById('uploadBox');
+
+        // Ensure file input is part of uploadBox
+        if (fileInput && uploadBox && !uploadBox.contains(fileInput)) {
+            uploadBox.appendChild(fileInput);
+        }
+
+        fileInput.addEventListener('change', function () {
+            const file = this.files[0];
+            const maxSize = 512000; // 500KB
+
+            if (file.size > maxSize) {
+                alert("Photo must be 500KB or less.");
+                this.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                uploadBox.innerHTML = `
+                    <img src="${e.target.result}" alt="Photo" style="width:100%; height:100%; object-fit:cover;">
+                    <span class="edit-icon no-print" id="editPhotoIcon" title="Edit Photo">✏️</span>
+                `;
+                uploadBox.appendChild(fileInput);
+                Object.assign(fileInput.style, {
+                    opacity: 0,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    cursor: 'pointer'
+                });
+
+                document.getElementById('editPhotoIcon').addEventListener('click', () => {
+                    fileInput.click();
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+{% endblock %}

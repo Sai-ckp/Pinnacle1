@@ -1,0 +1,469 @@
+﻿{% extends 'master/layout.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="form-card mx-auto" style="max-width: 800px; position: relative; display: flex; flex-direction: column; height: 100%;">
+        <!-- ✅ LOGO AND HEADING -->
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/fbZjQX3j/Untitled-Project.jpg" alt="College Logo">
+            <h2>PU Admission Form</h2>
+        </div>
+
+        <!-- Upload Photo -->
+        <div class="photo-section">
+            <label class="photo-label">Photo</label>
+            <div class="photo-upload" id="uploadBox">
+                <span>Upload</span>
+                {{ form.photo }}
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" style="flex: 1; display: flex; flex-direction: column;">
+            {% csrf_token %}
+            <div class="form-grid" style="flex: 1;">
+                <div class="form-group">
+                    <label class="form-label">Enquiry Number:</label>
+                    <input type="text" id="id_enquiry_no" name="enquiry_no" maxlength="20" autocomplete="off" />
+                    <small id="enquiry-error" style="color: red; display: none;">Enquiry number not found or not for PU</small>
+                </div>
+
+                <!-- Form Fields -->
+                <div class="form-group">
+                    <label class="form-label">Admission Number:</label>
+                    <input type="text" value="{{ next_admission_no }}" readonly style="background:#eee;">
+                </div>
+
+                {{ form.admission_no.as_hidden }}
+
+                <div class="form-group">
+                    <label class="form-label">Student Name:</label>
+                    {{ form.student_name }}
+                </div>
+                <div class="form-group">
+                    {{ form.course_type.label_tag }} {{ form.course_type }}
+                </div>
+                <div class="form-group">
+                    {{ form.course.label_tag }} {{ form.course }}
+                </div>
+                <div class="form-group">
+                    {{ form.year_of_passing.label_tag }} {{ form.year_of_passing }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date of Birth:</label>
+                    {{ form.dob }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gender:</label>
+                    {{ form.gender }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parent's Name:</label>
+                    {{ form.parent_name }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parent's Mobile Number:</label>
+                    {{ form.parent_mobile_no }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Aadhar Number:</label>
+                    {{ form.aadhar_no }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Caste:</label>
+                    {{ form.caste }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">SSLC Registration Number:</label>
+                    {{ form.sslc_reg_no }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">SSLC Percentage:</label>
+                    {{ form.sslc_percentage }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quota Type:</label>
+                    {{ form.quota_type }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Application Status:</label>
+                    {{ form.application_status }}
+                </div>
+            </div>
+
+            <!-- Submit + Print Buttons aligned to bottom-left and bottom-right -->
+            <div class="mt-4" style="display: flex; justify-content: space-between; width: 100%;">
+                <button type="button" class="btn btn-primary btn-sm no-print" onclick="window.print()">🖨️ Print</button>
+                <button type="submit" class="btn btn-primary btn-lg no-print">Submit</button>
+            </div>
+
+            {% if success %}
+            <div class="alert alert-success text-center mt-3" role="alert">
+                Admission Form Submitted Successfully!
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- JS: Handle photo upload + preview + size validation -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fileInput = document.getElementById('id_photo');
+        const uploadBox = document.getElementById('uploadBox');
+
+        if (fileInput && uploadBox && !uploadBox.contains(fileInput)) {
+            uploadBox.appendChild(fileInput);
+        }
+
+        fileInput.addEventListener('change', function () {
+            const file = this.files[0];
+            const maxSize = 512000; // 500KB
+
+            if (file.size > maxSize) {
+                alert("Photo must be 500KB or less.");
+                this.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                uploadBox.innerHTML = `
+                    <img src="${e.target.result}" alt="Photo" style="width:100%; height:100%; object-fit:cover;">
+                    <span class="edit-icon no-print" id="editPhotoIcon" title="Edit Photo">✏️</span>
+                `;
+                uploadBox.appendChild(fileInput);
+                fileInput.style.opacity = 0;
+                fileInput.style.position = 'absolute';
+                fileInput.style.top = 0;
+                fileInput.style.left = 0;
+                fileInput.style.width = '100%';
+                fileInput.style.height = '100%';
+                fileInput.style.cursor = 'pointer';
+                document.getElementById('editPhotoIcon').addEventListener('click', () => {
+                    fileInput.click();
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const parentMobile = document.getElementById('id_parent_mobile_no');
+        const aadharInput = document.getElementById('id_aadhar_no');
+
+        function enforceMobileValidation(input) {
+            let errorShown = false;
+            input.addEventListener('input', function () {
+                this.value = this.value.replace(/\D/g, '').slice(0, 10);
+                errorShown = false;
+            });
+            input.addEventListener('blur', function () {
+                const pattern = /^[6-9]\d{9}$/;
+                if (!pattern.test(this.value) && !errorShown && this.value.length > 0) {
+                    alert("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
+                    errorShown = true;
+                    this.focus();
+                }
+            });
+        }
+
+        function enforceAadharValidation(input) {
+            let errorShown = false;
+            input.addEventListener('input', function () {
+                this.value = this.value.replace(/\D/g, '').slice(0, 12);
+                errorShown = false;
+            });
+            input.addEventListener('blur', function () {
+                const pattern = /^\d{12}$/;
+                if (!pattern.test(this.value) && !errorShown && this.value.length > 0) {
+                    alert("Please enter a valid 12-digit Aadhar number (numbers only).");
+                    errorShown = true;
+                    this.focus();
+                }
+            });
+        }
+
+        if (parentMobile) enforceMobileValidation(parentMobile);
+        if (aadharInput) enforceAadharValidation(aadharInput);
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const sslcPercentage = document.getElementById('id_sslc_percentage');
+        if (sslcPercentage) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'percentage-wrapper';
+            sslcPercentage.parentNode.insertBefore(wrapper, sslcPercentage);
+            wrapper.appendChild(sslcPercentage);
+            const percentSymbol = document.createElement('span');
+            percentSymbol.className = 'percentage-symbol';
+            percentSymbol.textContent = '%';
+            wrapper.appendChild(percentSymbol);
+            sslcPercentage.addEventListener('input', function () {
+                let value = this.value;
+                value = value.replace(/[^0-9.]/g, '');
+                const parts = value.split('.');
+                if (parts.length > 2) {
+                    value = parts[0] + '.' + parts[1];
+                }
+                this.value = value;
+            });
+            sslcPercentage.addEventListener('blur', function () {
+                if (this.value !== '' && (parseFloat(this.value) < 0 || parseFloat(this.value) > 100)) {
+                    alert('Please enter a valid percentage between 0 and 100.');
+                    this.focus();
+                }
+            });
+        }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const enquiryInput = document.getElementById('id_enquiry_no');
+        const errorMsg = document.getElementById('enquiry-error');
+
+        enquiryInput.addEventListener('blur', () => {
+            const enquiryNo = enquiryInput.value.trim();
+            if (!enquiryNo) {
+                errorMsg.style.display = 'none';
+                return;
+            }
+            fetch(`/api/enquiry-lookup/?enquiry_no=${encodeURIComponent(enquiryNo)}&form_type=PUC`)
+                .then(response => {
+                    if (!response.ok) return response.json().then(err => { throw err });
+                    return response.json();
+                })
+                .then(json => {
+                    if (json.success) {
+                        const data = json.data;
+                        errorMsg.style.display = 'none';
+                        for (const field in data) {
+                            const input = document.getElementById('id_' + field);
+                            if (input) {
+                                // For select fields, trigger change event after setting value
+                                input.value = data[field] || '';
+                                if (input.tagName.toLowerCase() === 'select') {
+                                    input.dispatchEvent(new Event('change'));
+                                }
+                            }
+                        }
+                    } else {
+                        errorMsg.textContent = json.error || 'Enquiry not found or not for PU';
+                        errorMsg.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    errorMsg.textContent = (error && error.error) || 'Enquiry not found or not for PU';
+                    errorMsg.style.display = 'block';
+                });
+        });
+    });
+</script>
+
+<!-- Styles -->
+<style>
+    body {
+        background-color: #f1f1f1;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .form-card {
+        background: #fff;
+        padding: 40px 50px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    .form-title {
+        text-align: center;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 40px;
+        font-size: 24px;
+        color: #343a40;
+    }
+
+    .photo-section {
+        position: absolute;
+        top: 43px;
+        right: 50px;
+        text-align: center;
+    }
+
+    .photo-label {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+        color: #555;
+    }
+
+    .logo-container {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+        .logo-container img {
+            max-width: 400px;
+            margin-bottom: -18px;
+        }
+
+        .logo-container h2 {
+            margin-top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+    .photo-upload {
+        width: 89px;
+        height: 82px;
+        border: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        cursor: pointer;
+        background-color: #fafafa;
+        font-size: 14px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .photo-upload input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+    .edit-icon {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        font-size: 9px;
+        background-color: #0274ee;
+        color: white;
+        padding: 1px 1px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 38px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: #333;
+        font-size: 12px;
+    }
+
+    .form-group select,
+    .form-group input {
+        padding: 5px 4px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 9px;
+    }
+
+    .btn {
+        font-size: 9px;
+        padding: 4px 7px;
+        border-radius: 5px;
+        margin-bottom: 0px;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-primary {
+        background-color: #0274ee;
+        color: white;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #025fc1;
+        }
+
+    @media print {
+        .btn,
+        .alert,
+        .photo-upload input,
+        .edit-icon,
+        .no-print,
+        .sidebar,
+        .topbar {
+            display: none !important;
+        }
+
+        body {
+            background: white;
+        }
+
+        .form-card {
+            box-shadow: none;
+            border: none;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-title {
+            font-size: 16pt;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+    }
+
+    .btn-sm {
+        padding: 3px 7px;
+        font-size: 8px;
+    }
+
+    .sidebar {
+        width: 200px;
+        height: 100vh;
+        background: linear-gradient(135deg, #ff00cc, #3333ff);
+        color: white;
+        padding-top: 0px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 11px 8px;
+            display: block;
+            font-weight: 500;
+        }
+
+    .content {
+        padding: 0px 74px 18px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'master/layout.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Subject</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .modal-container {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .form-control, select {
+            font-size: 9px;
+            padding: 3px;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            width: 48%;
+            font-weight: 500;
+            padding: 3px;
+            font-size: 12px;
+            text-align: center;
+            background-color: #0274ee;
+            color: white;
+            border: none;
+        }
+
+        .btn-secondary {
+            width: 48%;
+            font-weight: 500;
+            padding: 3px;
+            font-size: 12px;
+            text-align: center;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+        }
+
+        .modal-container label {
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 3px;
+            display: inline-block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-container">
+        <h2>Add Subject</h2>
+        <form method="post">
+            {% csrf_token %}
+
+            <label>{{ form.name.label }}</label>
+            {{ form.name }}
+
+            <label>{{ form.course.label }}</label>
+            <select name="course" id="id_course" onchange="this.form.submit()" class="form-control">
+                <option value="">Select course</option>
+                {% for course in form.fields.course.queryset %}
+                    <option value="{{ course.id }}"
+                        {% if selected_course_id|stringformat:"s" == course.id|stringformat:"s" %}selected{% endif %}>
+                        {{ course.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="id_semester">Semester:</label>
+            <select name="semester" id="id_semester" required class="form-control">
+                <option value="">Select semester</option>
+                {% for sem in semesters %}
+                    <option value="{{ sem.number }}"
+                        {% if request.POST.semester == sem.number|stringformat:"s" %}selected{% endif %}>
+                        {{ sem.number }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label>{{ form.subject_code.label }}</label>
+            {{ form.subject_code }}
+
+            <label>{{ form.credit.label }}</label>
+            {{ form.credit }}
+
+            <label>{{ form.faculty.label }}</label>
+            {{ form.faculty }}
+
+            <div class="btn-container">
+                <a href="{% url 'subject_list' %}" class="btn btn-secondary">Back</a>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}

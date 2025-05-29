@@ -1,0 +1,205 @@
+{% extends 'master/layout.html' %}
+
+{% block title %}Student Payment History{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Payment History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+        }
+
+        h2 {
+            font-size: 14px;
+            margin: 15px 0 8px 0;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+            .search-bar input[type="text"] {
+                padding: 3px 6px;
+                font-size: 9px;
+                width: 220px;
+                border: 1px solid #ccc;
+            }
+
+            .search-bar button {
+                padding: 3px 8px;
+                font-size: 9px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                margin-left: 5px;
+            }
+
+        .info-message {
+            text-align: right;
+            font-size: 9px;
+            color: gray;
+            margin-top: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            margin-top: 8px;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 4px;
+            border: 1px solid #ccc;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+            th:nth-child(1), td:nth-child(1) {
+                width: 9%;
+            }
+
+            th:nth-child(2), td:nth-child(2) {
+                width: 9%;
+            }
+
+            th:nth-child(3), td:nth-child(3) {
+                width: 9%;
+            }
+
+            th:nth-child(4), td:nth-child(4) {
+                width: 7%;
+            }
+
+            th:nth-child(5), td:nth-child(5) {
+                width: 9%;
+            }
+
+            th:nth-child(6), td:nth-child(6) {
+                width: 7%;
+            }
+
+            th:nth-child(7), td:nth-child(7) {
+                width: 7%;
+            }
+
+            th:nth-child(8), td:nth-child(8) {
+                width: 9%;
+            }
+
+            th:nth-child(9), td:nth-child(9) {
+                width: 9%;
+            }
+
+            th:nth-child(10), td:nth-child(10) {
+                width: 15%;
+            }
+
+        .action-link {
+            font-size: 9px;
+            margin-right: 4px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 9px;
+        }
+
+            .pagination a, .pagination span {
+                margin: 0 3px;
+                text-decoration: none;
+                color: #4CAF50;
+            }
+    </style>
+</head>
+<body>
+
+    <h2>Student Payment History</h2>
+
+    <div class="search-bar">
+        <form method="get">
+            <input type="text" name="search" placeholder="Enter Admission No or Name" value="{{ search_query|default:'' }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    {% if not search_query %}
+    <div class="info-message">
+        Please enter an Admission Number or Name to view payment history.
+    </div>
+    {% endif %}
+
+    {% if search_query %}
+    <table>
+        <thead>
+            <tr>
+                <th>Admission No</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Base Fee</th>
+                <th>Total Fee Paid</th>
+                <th>Pending Fee</th>
+                <th>Amount Paid</th>
+                <th>Payment Method</th>
+                <th>Paid On</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in history %}
+            <tr>
+                <td>{{ record.admission_no }}</td>
+                <td>{{ record.name }}</td>
+                <td>{{ record.course }}</td>
+                <td>{{ record.base_fee }}</td>
+                <td>{{ record.fee_paid }}</td>
+                <td>{{ record.final_fee }}</td>
+                <td>{{ record.amount }}</td>
+                <td>{{ record.payment_method }}</td>
+                <td>{{ record.date_of_fee_paid|date:"Y-m-d H:i" }}</td>
+                <td>
+                    <a href="{% url 'download_student_receipt' record.id %}" target="_blank" class="action-link">Student PDF</a> |
+                    <a href="{% url 'download_admin_receipt' record.id %}" target="_blank" class="action-link">Admin PDF</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10" style="text-align: center;">No payment records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">&laquo; First</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+        {% endif %}
+
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">Last &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</body>
+</html>
+{% endblock %}
+
