@@ -1,0 +1,21 @@
+# .gitignore
+
+# Visual Studio and system files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Django
+*.sqlite3
+*.log
+media/
+staticfiles/
+.env
