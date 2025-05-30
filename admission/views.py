@@ -746,7 +746,6 @@ def generate_qr_dynamic(request):
 
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from weasyprint import HTML
 from .models import Student
 
 def generate_fee_receipt_pdf(request, student_id):
@@ -828,7 +827,6 @@ def save_payment(request):
 
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from weasyprint import HTML
 from .models import StudentPaymentHistory
 
 def download_student_receipt(request, pk):
