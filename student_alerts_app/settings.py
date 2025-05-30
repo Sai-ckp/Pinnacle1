@@ -26,7 +26,7 @@ SECRET_KEY = '6e470ba8-802a-428f-b168-40d4eadee009'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['pinnacle-fyehasf8egfbfrbk.southeastasia-01.azurewebsites.net']
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
 
 # Application references
 # https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS
