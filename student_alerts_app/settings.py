@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '6e470ba8-802a-428f-b168-40d4eadee009'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['pinnacle-fyehasf8egfbfrbk.southeastasia-01.azurewebsites.net']
 
