@@ -129,6 +129,7 @@ PyQt5_sip==12.17.0
 python-crontab==3.2.0
 python-dateutil==2.9.0.post0
 pythonnet==3.0.5
+python-dotenv
 pytz==2024.1
 pyzmq==26.0.3
 qrcode==8.0
