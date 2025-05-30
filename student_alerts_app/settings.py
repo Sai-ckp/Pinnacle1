@@ -28,10 +28,11 @@ DEBUG = False
 
 
 ALLOWED_HOSTS = [
-    "pinnacle-college-a6azffexf4asajgg.southeastasia-01.azurewebsites.net",  # Replace with your actual Azure app name
+    "pinnacle-fyehasf8egfbfrbk.southeastasia-01.azurewebsites.net",
     "127.0.0.1",
     "localhost"
 ]
+
 
 
 
