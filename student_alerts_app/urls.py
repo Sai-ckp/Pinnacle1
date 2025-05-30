@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('master.urls')), 
-    path('', include('admission.urls')), # Includes app-level URLs for the routes defined in `master.urls`
-     path('', include('attendence.urls')),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('master/', include('master.urls')),         # Previously '', now 'master/'
+    path('admission/', include('admission.urls')),   # Previously '', now 'admission/'
+    path('attendence/', include('attendence.urls')), # Previously '', now 'attendence/'
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
