@@ -26,7 +26,8 @@ SECRET_KEY = '6e470ba8-802a-428f-b168-40d4eadee009'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(",")
+ALLOWED_HOSTS = ['pinnacle-college-a6azffexf4asajgg.southeastasia-01.azurewebsites.net', '169.254.129.3']
+
 
 # Application references
 # https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS
@@ -153,19 +154,7 @@ TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_WHATSAPP_NUMBER = os.getenv('TWILIO_WHATSAPP_NUMBER')
 TWILIO_SMS_NUMBER = os.getenv('TWILIO_SMS_NUMBER')
 
-EMAIL_PROVIDERS = {
-    'postmark': {
-        'API_TOKEN': '82d1585c-84b7-4250-a38c-2c10b97d6e3c ',
-        'FROM_EMAIL': 'nischitha@ckpsoftware.com',
-    },
-    'sendgrid': {
-        'API_TOKEN': 'your-sendgrid-api-key-here',
-        'FROM_EMAIL': 'verified-email@yourdomain.com',
-    },
-}
 
-# Choose which provider to use globally or per use case
-EMAIL_PROVIDER_NAME = 'postmark'  # or 'sendgrid'
 
 
 
