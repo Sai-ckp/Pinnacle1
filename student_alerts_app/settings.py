@@ -105,14 +105,16 @@ DATABASES = {
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT', '3306'),  # fallback to 3306
+        'PORT': os.getenv('DB_PORT', '3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
-            'init_command': "SET NAMES 'utf8mb4'"
+            'init_command': "SET NAMES 'utf8mb4'",
+            'ssl': {
+                'ca': os.path.join(BASE_DIR, 'certs', 'C:\Users\Admin\Downloads\DigiCertGlobalRootG2.crt.pem')
+            }
         },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
