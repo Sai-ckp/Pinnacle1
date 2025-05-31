@@ -10,7 +10,10 @@ from .models import User
 
 def blank_view(request):
     return render(request, 'master/blank.html')
- 
+
+def health_check_view(request):
+    return HttpResponse("OK", status=200)
+
 def custom_login_view(request):
     error = None
     if request.method == 'POST':
