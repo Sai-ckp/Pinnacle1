@@ -110,7 +110,7 @@ DATABASES = {
             'charset': 'utf8mb4',
             'init_command': "SET NAMES 'utf8mb4'",
             'ssl': {
-                'ca': os.path.join(BASE_DIR, 'certs', 'DigiCertGlobalRootG2.crt.pem')
+                'ca': os.getenv('MYSQL_SSL_CA_PATH')
             }
         },
     }
