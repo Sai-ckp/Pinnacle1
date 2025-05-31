@@ -32,10 +32,9 @@ ALLOWED_HOSTS = [
     "pinnacle-fyehasf8egfbfrbk.southeastasia-01.azurewebsites.net",
     "127.0.0.1",
     "localhost",
-    "169.254.130.4",  # Azure internal probe IP
+    "169.254.130.4",
+    "169.254.130.5",
 ]
-
-
 
 
 
