@@ -110,7 +110,7 @@ DATABASES = {
             'charset': 'utf8mb4',
             'init_command': "SET NAMES 'utf8mb4'",
             'ssl': {
-                'ca': os.path.join(BASE_DIR, 'certs', 'C:\Users\Admin\Downloads\DigiCertGlobalRootG2.crt.pem')
+                'ca': os.path.join(BASE_DIR, 'certs', "C:\Users\Admin\Downloads\DigiCertGlobalRootG2.crt.pem")
             }
         },
     }
