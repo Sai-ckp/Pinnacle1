@@ -4,6 +4,7 @@ from . import views
 
 
 urlpatterns = [
+    path('health/', views.health_check_view),
     path('dashboard/', views.dashboard_view, name='dashboard_view'),
     path('logout/', views.logout_view, name='logout'),
     path('', views.custom_login_view, name='login'),  # Redirect root path to login
