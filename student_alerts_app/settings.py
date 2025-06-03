@@ -1,52 +1,39 @@
 """
 Django settings for student_alerts_app project.
-
 Based on 'django-admin startproject' using Django 2.1.2.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/2.1/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
 import posixpath
+import base64
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# Load .env variables
+load_dotenv()
+
+# Base directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# Secret key
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
+# Debug setting
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-
+# Allowed hosts
 ALLOWED_HOSTS = [
     "pinnacle-fyehasf8egfbfrbk.southeastasia-01.azurewebsites.net",
     "127.0.0.1",
     "localhost",
-    "169.254.130.3",  # <== ADD THIS
-    "169.254.130.4",  # existing
+    "169.254.130.3",
+    "169.254.130.4",
 ]
 
-
-
-
-
-# Application references
-# https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-INSTALLED_APPS
+# Installed apps
 INSTALLED_APPS = [
     'master',
     'admission',
     'attendence',
-    # Add your apps here to enable them
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,8 +43,7 @@ INSTALLED_APPS = [
     'student_alerts_app',
 ]
 
-# Middleware framework
-# https://docs.djangoproject.com/en/2.1/topics/http/middleware/
+# Middleware
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -71,17 +57,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'student_alerts_app.urls'
 
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-# Template configuration
-# https://docs.djangoproject.com/en/2.1/topics/templates/
+# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'master', 'admission','templates')], 
+        'DIRS': [],  # rely on APP_DIRS=True and app template folders
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,12 +76,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'student_alerts_app.wsgi.application'
-# Database
-import os
-import base64
 
+# Database with SSL cert from environment
 cert_path = "/tmp/mysql_cert.pem"
-
 base64_cert = os.environ.get("MYSQL_SSL_CERT")
 if base64_cert:
     with open(cert_path, "wb") as f:
@@ -114,7 +91,7 @@ DATABASES = {
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST'),
-        'PORT': '3306',
+        'PORT': os.environ.get('DB_PORT', '3306'),
         'OPTIONS': {
             'ssl': {'ca': cert_path},
         },
@@ -122,64 +99,49 @@ DATABASES = {
 }
 
 # Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/2.1/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
-USE_TZ = True
-
 USE_I18N = True
 USE_L10N = True
-# settings.py
+USE_TZ = True
 
+# Login redirect
 LOGIN_REDIRECT_URL = '/dashboard/'
 
-
-import os
-
+# Media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
-TIME_ZONE = 'Asia/Kolkata'
-USE_TZ = True
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-
-
-
-# Twilio Configuration
-from dotenv import load_dotenv
-load_dotenv()
-
+# Twilio settings
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_WHATSAPP_NUMBER = os.getenv('TWILIO_WHATSAPP_NUMBER')
 TWILIO_SMS_NUMBER = os.getenv('TWILIO_SMS_NUMBER')
 
-
-
-
-
-
-
-
-
+# Logging (optional but useful for production)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
