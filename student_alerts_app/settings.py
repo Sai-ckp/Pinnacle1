@@ -78,11 +78,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'student_alerts_app.wsgi.application'
 
 # Database with SSL cert from environment
-cert_path = "/tmp/mysql_cert.pem"
+import os
+import base64
+
+# Create writable directory for SSL cert
+os.makedirs("/home/site/temp", exist_ok=True)
+
+cert_path = "/home/site/temp/mysql_cert.pem"
 base64_cert = os.environ.get("MYSQL_SSL_CERT")
+
 if base64_cert:
     with open(cert_path, "wb") as f:
         f.write(base64.b64decode(base64_cert))
+
 
 DATABASES = {
     'default': {
