@@ -77,20 +77,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'student_alerts_app.wsgi.application'
 
-# Database with SSL cert from environment
-import os
-import base64
+# --- DATABASE CONFIGURATION WITH SSL CERT ---
 
-# Create writable directory for SSL cert
-os.makedirs("/home/site/temp", exist_ok=True)
+# Ensure directory exists and writable for cert file
+cert_dir = "/home/site/temp"
+os.makedirs(cert_dir, exist_ok=True)
 
-cert_path = "/home/site/temp/mysql_cert.pem"
+cert_path = os.path.join(cert_dir, "mysql_cert.pem")
 base64_cert = os.environ.get("MYSQL_SSL_CERT")
 
 if base64_cert:
-    with open(cert_path, "wb") as f:
-        f.write(base64.b64decode(base64_cert))
-
+    try:
+        with open(cert_path, "wb") as f:
+            f.write(base64.b64decode(base64_cert))
+        print(f"[INFO] MySQL SSL cert written successfully to {cert_path}")
+    except Exception as e:
+        print(f"[ERROR] Failed to write MySQL SSL cert: {e}")
+else:
+    print("[WARNING] MYSQL_SSL_CERT environment variable is missing!")
 
 DATABASES = {
     'default': {
@@ -101,7 +105,7 @@ DATABASES = {
         'HOST': os.environ.get('DB_HOST'),
         'PORT': os.environ.get('DB_PORT', '3306'),
         'OPTIONS': {
-            'ssl': {'ca': cert_path},
+            'ssl': {'ca': cert_path} if base64_cert else {},
         },
     }
 }
@@ -139,13 +143,19 @@ TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_WHATSAPP_NUMBER = os.getenv('TWILIO_WHATSAPP_NUMBER')
 TWILIO_SMS_NUMBER = os.getenv('TWILIO_SMS_NUMBER')
 
-# Logging (optional but useful for production)
+# Logging config to help debug DB connection errors
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # DEBUG for DB queries and connection info
         },
     },
     'root': {
