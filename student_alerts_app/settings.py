@@ -8,6 +8,10 @@ import posixpath
 import base64
 from dotenv import load_dotenv
 
+# Use PyMySQL as MySQLdb replacement to fix RSA Encryption error
+import pymysql
+pymysql.install_as_MySQLdb()
+
 # Load .env variables
 load_dotenv()
 
